@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import "@/app/news.css";
-import HotSwiper from "./components/HotSwiper";
+import SwiperNews from "./components/SwiperNews"; // import the new Swiper component
 
 type NewsItem = {
   title: string;
@@ -16,21 +16,14 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"National" | "International">("National");
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
 
-  // Article files
   const nationalFiles: NewsItem[] = [
     { title: "National Article 85", file: "/Articles/NationalNews/85.md" },
     { title: "National Article 86", file: "/Articles/NationalNews/86.md" },
-    { title: "National Article 87", file: "/Articles/NationalNews/87.md" },
-    { title: "National Article 88", file: "/Articles/NationalNews/88.md" },
-    { title: "National Article 89", file: "/Articles/NationalNews/89.md" },
   ];
 
   const internationalFiles: NewsItem[] = [
     { title: "International Article 82", file: "/Articles/InternationalNews/82.md" },
     { title: "International Article 83", file: "/Articles/InternationalNews/83.md" },
-    { title: "International Article 84", file: "/Articles/InternationalNews/84.md" },
-    { title: "International Article 85", file: "/Articles/InternationalNews/85.md" },
-    { title: "International Article 86", file: "/Articles/InternationalNews/86.md" },
   ];
 
   const [nationalNews, setNationalNews] = useState<NewsItem[]>([]);
@@ -38,6 +31,7 @@ export default function HomePage() {
 
   const newsToShow = activeTab === "National" ? nationalNews : internationalNews;
 
+  // Fetch Markdown content
   useEffect(() => {
     const fetchMarkdown = async (files: NewsItem[], setter: any) => {
       const updatedNews = await Promise.all(
@@ -50,7 +44,7 @@ export default function HomePage() {
             const imageMatch = text.match(/!\[.*?\]\((.*?)\)/);
             const image = imageMatch ? imageMatch[1] : undefined;
 
-            // Remove image from content
+            // Remove first image from content
             if (imageMatch) text = text.replace(imageMatch[0], "");
 
             return { ...item, content: text, image };
@@ -66,8 +60,10 @@ export default function HomePage() {
     fetchMarkdown(internationalFiles, setInternationalNews);
   }, []);
 
-  const getExcerpt = (content?: string) =>
-    content ? content.split(/\s+/).slice(0, 10).join(" ") + "..." : "";
+  const getExcerpt = (content?: string) => {
+    if (!content) return "";
+    return content.split(/\s+/).slice(0, 10).join(" ") + "...";
+  };
 
   // Article view
   if (selectedArticle) {
@@ -106,7 +102,7 @@ export default function HomePage() {
         Wize Wealth
       </h1>
 
-      {/* Tabs */}
+      {/* Toggle Buttons */}
       <div className="flex gap-6 mb-8">
         <button
           className={`px-6 py-3 text-lg font-semibold rounded-lg border-2 transition ${
@@ -130,47 +126,36 @@ export default function HomePage() {
         </button>
       </div>
 
-      {/* Hot Headlines */}
+      {/* Hot Headlines Swiper */}
       <h2 className="text-2xl font-bold text-yellow-500 mb-4 self-start">
         Hot Headlines <span className="text-sm text-gray-400">(Swipe Slides)</span>
       </h2>
+
       <div className="w-full mb-10">
-        <HotSwiper
-          news={newsToShow.slice(0, 3)}
-          onClick={setSelectedArticle}
-          className="h-80" // taller Swiper
-        />
+        <SwiperNews news={newsToShow} onClick={setSelectedArticle} />
       </div>
 
       {/* What's Happening */}
       <h2 className="text-2xl font-bold text-yellow-500 mb-4 self-start">
-        What's Happening
+        What&apos;s Happening
       </h2>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
-        {newsToShow.slice(3, 11).map((news, index) => (
+        {newsToShow.slice(3).map((news, index) => (
           <div
             key={index}
-            className="bg-gray-800 rounded-lg shadow-md cursor-pointer hover:bg-gray-700 transition flex flex-col h-72"
+            className="bg-gray-800 rounded-lg shadow-md p-4 cursor-pointer hover:bg-gray-700 transition flex flex-col"
             onClick={() => setSelectedArticle(news)}
           >
-            {/* Image */}
             {news.image && (
               <img
                 src={news.image}
                 alt={news.title}
-                className="w-full h-48 object-cover rounded-t-lg"
+                className="mb-3 rounded-lg h-40 object-cover"
               />
             )}
-
-            {/* Heading & Excerpt */}
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <h3 className="text-lg font-semibold mb-2 text-white">{news.title}</h3>
-              <p className="text-gray-300 text-sm">
-                {news.content
-                  ? news.content.replace(/!\[.*?\]\(.*?\)/, "").split(/\s+/).slice(0, 10).join(" ") + "..."
-                  : ""}
-              </p>
-            </div>
+            <h3 className="text-lg font-semibold mb-2">{news.title}</h3>
+            <p className="text-gray-300 text-sm">{getExcerpt(news.content)}</p>
           </div>
         ))}
       </div>
