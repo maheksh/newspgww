@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import "@/app/news.css";
-import SwiperNews from "./components/HotSwiper"; // import the new Swiper componentimport HotSwiper from "
+import SwiperNews from "@/app/components/HotSwiper"; // import the new Swiper componentimport HotSwiper from "
 
 type NewsItem = {
   title: string;
