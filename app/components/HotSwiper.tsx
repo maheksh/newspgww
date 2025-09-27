@@ -1,11 +1,11 @@
 "use client";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules"; // ✅ correct import in Swiper 12+
+import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-import { NewsItem } from "../page"; // using the type from page.tsx
+import { NewsItem } from "../page";
 
 type Props = {
   news: NewsItem[];
@@ -31,10 +31,10 @@ export default function HotSwiper({ news, onClick }: Props) {
               <img
                 src={item.image}
                 alt={item.title}
-                className="w-full h-64 object-cover rounded-t-lg"
+                className="w-full h-[50vw] sm:h-64 object-cover rounded-t-lg aspect-[16/9]"
               />
             )}
-            <h3 className="text-lg font-semibold text-white mt-2 px-3 py-2">
+            <h3 className="text-base sm:text-lg font-semibold text-white mt-2 px-3 py-2">
               {item.title}
             </h3>
           </div>
